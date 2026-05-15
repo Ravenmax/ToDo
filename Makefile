@@ -1,7 +1,11 @@
 include .env
 export
 
-export PROJECT_ROOT=${shell pwd}
+
+PROJECT_ROOT := $(shell pwd)
+POSTGRES_URL := 'postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)?sslmode=disable'
+MIGRATIONS_PATH := ./migrations
+
 
 env-up:
 	@docker compose up -d todoapp-postgres
@@ -18,6 +22,13 @@ env-cleanup:
 		echo "Postgres environment cleanup cancelled"; \
 	fi
 
+env-port-forward:
+	@docker compose up -d port-forwardery
+
+env-port-close:
+	@docker compose down port-forwarder
+
+.PHONY: migrate-create
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
 		echo "No seq entered"; \
@@ -26,21 +37,34 @@ migrate-create:
 	docker compose run --rm todoapp-postgres-migrate \
 		create \
 		-ext sql \
-		-dir ./migrations \
-		-seq "$(seq)" 
+		-dir $(MIGRATIONS_PATH) \
+		-seq "$(seq)"
 
+.PHONY: migrate-down
 migrate-down:
 	@make migrate-action action=down
 
+.PHONY: migrate-up
 migrate-up:
 	@make migrate-action action=up
 
+.PHONY: migrate-action		
 migrate-action:
 	@if [ -z "$(action)" ]; then \
 		echo "No action entered"; \
 		exit 1; \
 	fi; \
 	docker compose run --rm todoapp-postgres-migrate \
-		-path /migrations \
-		-database postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)&sslmode=disable \
+		-path $(MIGRATIONS_PATH) \
+		-database $(POSTGRES_URL) \
 		"$(action)"
+
+.PHONY: migrate-force
+migrate-force:
+	docker compose run --rm todoapp-postgres-migrate \
+		force \
+		-database $(POSTGRES_URL) \
+		-path $(MIGRATIONS_PATH) \
+		"$(VERSION)"
+
+		
