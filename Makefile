@@ -67,4 +67,7 @@ migrate-force:
 		-path $(MIGRATIONS_PATH) \
 		"$(VERSION)"
 
-		
+todoapp-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs/ && \
+	go mod tidy && \
+	go run cmd/todoapp/main.go		
