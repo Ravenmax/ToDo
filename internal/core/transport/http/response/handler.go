@@ -22,6 +22,19 @@ func NewHTTPResponseHandler(log *core_logger.Logger, rw http.ResponseWriter) *Ht
 		rw:  rw,
 	}
 }
+func (h *HttpResponseHandler) JSONResponse(
+	responseBody any,
+	statusCode int,
+) {
+	h.rw.WriteHeader(statusCode)
+	if err := json.NewEncoder(h.rw).Encode(responseBody); err != nil {
+		h.log.Error("write HTTP response", zap.Error(err))
+	}
+
+}
+func (h *HttpResponseHandler) NoContentResponse() {
+	h.rw.WriteHeader(http.StatusNoContent)
+}
 func (h *HttpResponseHandler) ErrorResponse(err error, msg string) {
 	var (
 		statusCode int
@@ -67,15 +80,14 @@ func (h *HttpResponseHandler) errorResponse(
 	err error,
 	msg string,
 ) {
-	h.rw.WriteHeader(statusCode)
 
 	response := map[string]string{
 		"message": msg,
 		"error":   err.Error(),
 	}
 
-	if err := json.NewEncoder(h.rw).Encode(response); err != nil {
-		h.log.Error("Write HTTP response", zap.Error(err))
-
-	}
+	h.JSONResponse(
+		response,
+		statusCode,
+	)
 }

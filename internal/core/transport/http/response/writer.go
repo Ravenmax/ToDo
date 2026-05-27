@@ -8,23 +8,23 @@ var (
 
 type ResponseWriter struct {
 	http.ResponseWriter
-	statucCode int
+	statusCode int
 }
 
 func NewResponseWriter(w http.ResponseWriter) *ResponseWriter {
 	return &ResponseWriter{
 		ResponseWriter: w,
-		statucCode:     StatusCodeUninitialized,
+		statusCode:     StatusCodeUninitialized,
 	}
 }
 func (rw *ResponseWriter) WriteHeader(statusCode int) {
 	rw.ResponseWriter.WriteHeader(statusCode)
-	rw.statucCode = statusCode
+	rw.statusCode = statusCode
 }
 
 func (rw *ResponseWriter) GetStatusCodeOrPanic() int {
-	if rw.statucCode == StatusCodeUninitialized {
+	if rw.statusCode == StatusCodeUninitialized {
 		panic("no status code set")
 	}
-	return rw.statucCode
+	return rw.statusCode
 }
