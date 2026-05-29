@@ -1,0 +1,21 @@
+package core_http_server
+
+import (
+	"net/http"
+
+	core_http_middleware "github.com/Ravenmax/ToDo/internal/core/transport/http/middelware"
+)
+
+type Route struct {
+	Mehtod     string
+	Path       string
+	Handler    http.HandlerFunc
+	Middleware []core_http_middleware.Middleware
+}
+
+func (r *Route) WithMiddleware() http.Handler {
+	return core_http_middleware.ChainMiddleware(
+		r.Handler,
+		r.Middleware...,
+	)
+}
