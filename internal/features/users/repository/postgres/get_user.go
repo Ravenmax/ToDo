@@ -7,7 +7,7 @@ import (
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
-	"github.com/jackc/pgx/v5"
+	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
 )
 
 func (r *UserRepository) GetUser(
@@ -30,7 +30,7 @@ func (r *UserRepository) GetUser(
 		&userModel.PhoneNumber,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
 				"user with id=%d not found: %w",
 				id,

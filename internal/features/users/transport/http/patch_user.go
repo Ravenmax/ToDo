@@ -10,7 +10,6 @@ import (
 	core_http_request "github.com/Ravenmax/ToDo/internal/core/transport/http/request"
 	core_http_response "github.com/Ravenmax/ToDo/internal/core/transport/http/response"
 	core_http_types "github.com/Ravenmax/ToDo/internal/core/transport/http/types"
-	core_http_utils "github.com/Ravenmax/ToDo/internal/core/transport/http/utils"
 	"go.uber.org/zap"
 )
 
@@ -50,7 +49,7 @@ func (h *UsersHTTPHandlers) PatchUser(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
-	userID, err := core_http_utils.GetIntPathValues(r, "id")
+	userID, err := core_http_request.GetIntPathValues(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
@@ -82,8 +81,9 @@ func (h *UsersHTTPHandlers) PatchUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func UserPatchFromRequest(request PatchUserRequest) domain.UserPatch {
-	return domain.UserPatch{
-		FullName:    request.FullName.ToDomain(),
-		PhoneNumber: request.PhoneNumber.ToDomain(),
-	}
+	return domain.NewUserPatch(
+		request.FullName.ToDomain(),
+		request.PhoneNumber.ToDomain(),
+	)
+
 }

@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	core_logger "github.com/Ravenmax/ToDo/internal/core/logger"
-	core_postgres_pull "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
+	core_pgx_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull/pull/pgx"
 	core_http_middleware "github.com/Ravenmax/ToDo/internal/core/transport/http/middelware"
 	core_http_server "github.com/Ravenmax/ToDo/internal/core/transport/http/server"
 	users_postgres_repository "github.com/Ravenmax/ToDo/internal/features/users/repository/postgres"
@@ -33,9 +33,9 @@ func main() {
 	defer logger.Close()
 	logger.Debug("inializing posgtress pull")
 	//создаем пул подключений к базе даных
-	pool, err := core_postgres_pull.NewConnectionPool(
+	pool, err := core_pgx_pool.NewPool(
 		ctx,
-		core_postgres_pull.NewConfigMust(),
+		core_pgx_pool.NewConfigMust(),
 	)
 	if err != nil {
 		logger.Fatal("failed to init postgres connection pool", zap.Error(err))
@@ -54,12 +54,20 @@ func main() {
 		logger,
 		core_http_middleware.RequestID(),
 		core_http_middleware.Logger(logger),
-		core_http_middleware.Panic(),
 		core_http_middleware.Trace(),
+		core_http_middleware.Panic(),
 	)
-	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
-	apiVersionRouter.RegisterRoutes(users_transport_http.Routes()...)
-	httpServer.RegisterAPIRouters(apiVersionRouter)
+	apiVersionRouterV1 := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
+	apiVersionRouterV1.RegisterRoutes(users_transport_http.Routes()...)
+
+	// Example of usage middleware on router
+	// apiVersionRouterV2 := core_http_server.NewApiVersionRouter(
+	// 	core_http_server.ApiVersion2,
+	// 	core_http_middleware.Dummy("APIV2 middleware"),
+	// )
+	// apiVersionRouterV2.RegisterRoutes(users_transport_http.Routes()...)
+
+	httpServer.RegisterAPIRouters(apiVersionRouterV1)
 
 	//стартуем сервер
 	if err := httpServer.Run(ctx); err != nil {

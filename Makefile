@@ -16,7 +16,7 @@ env-cleanup:
 	@read -p "Delete all environment files? Data loss risk. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
 		docker compose down todoapp-postgres port-forwarder && \
-		rm -rf out/pgdata && \
+		rm -rf ${PROJECT_ROOT}/out/pgdata && \
 		echo "Postgres environment files cleaned"; \
 	else \
 		echo "Postgres environment cleanup cancelled"; \
@@ -71,4 +71,4 @@ todoapp-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs/ && \
 	export POSTGRES_HOST=LOCALHOST && \
 	go mod tidy && \
-	go run cmd/todoapp/main.go		
+	go run ${PROJECT_ROOT}/cmd/todoapp/main.go		

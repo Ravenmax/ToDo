@@ -7,7 +7,7 @@ import (
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
-	"github.com/jackc/pgx/v5"
+	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
 )
 
 func (r *UserRepository) PatchUser(
@@ -42,7 +42,7 @@ func (r *UserRepository) PatchUser(
 		&userModel.PhoneNumber,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf("user with ID: %d concurency contest: %w", id, core_errors.ErrConflict)
 		}
 		return domain.User{}, fmt.Errorf("scan error: %w", err)

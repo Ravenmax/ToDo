@@ -29,6 +29,16 @@ func NewUser(
 	}
 }
 
+func NewUserPatch(
+	fullname Nullable[string],
+	phoneNumber Nullable[string],
+) UserPatch {
+	return UserPatch{
+		FullName:    fullname,
+		PhoneNumber: phoneNumber,
+	}
+}
+
 func NewUserUninitialized(fullName string, phoneNumber *string) User {
 	return NewUser(UninitializedID, UninitializedVersion, fullName, phoneNumber)
 }
