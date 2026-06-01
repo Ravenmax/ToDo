@@ -13,6 +13,9 @@ import (
 	core_pgx_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull/pull/pgx"
 	core_http_middleware "github.com/Ravenmax/ToDo/internal/core/transport/http/middelware"
 	core_http_server "github.com/Ravenmax/ToDo/internal/core/transport/http/server"
+	statistics_postgres_repository "github.com/Ravenmax/ToDo/internal/features/statistics/repository/postgres"
+	statistics_service "github.com/Ravenmax/ToDo/internal/features/statistics/service"
+	statistics_transport_http "github.com/Ravenmax/ToDo/internal/features/statistics/transport/http"
 	tasks_postgres_repository "github.com/Ravenmax/ToDo/internal/features/tasks/repository/postgres"
 	tasks_service "github.com/Ravenmax/ToDo/internal/features/tasks/service"
 	tasks_transport_http "github.com/Ravenmax/ToDo/internal/features/tasks/transport/http"
@@ -55,11 +58,17 @@ func main() {
 	logger.Debug("initializing features", zap.String("feature", "users"))
 	usersRepository := users_postgres_repository.NewUserRepository(pool)
 	userService := users_service.NewUsersService(usersRepository)
-	users_transport_http := users_transport_http.NewUsersHTTPHandler(userService)
+	usersTransportHttp := users_transport_http.NewUsersHTTPHandler(userService)
+
 	logger.Debug("initializing features", zap.String("feature", "tasks"))
 	tasksRepository := tasks_postgres_repository.NewTasksRepository(pool)
 	tasksService := tasks_service.NewTasksService(tasksRepository)
-	task_transport_http := tasks_transport_http.NewTasksHTTPHandler(tasksService)
+	tasksTransportHttp := tasks_transport_http.NewTasksHTTPHandler(tasksService)
+
+	logger.Debug("initializin features", zap.String("feature", "statistics"))
+	statisticsRepository := statistics_postgres_repository.NewStatisticsRepository(pool)
+	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
+	statisticsHttpTransport := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
 
 	// создаем транспорт, роуты и апиверсии для сервера и связываем между собой
 	logger.Debug("initializing HTTP server")
@@ -72,8 +81,9 @@ func main() {
 		core_http_middleware.Panic(),
 	)
 	apiVersionRouterV1 := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
-	apiVersionRouterV1.RegisterRoutes(users_transport_http.Routes()...)
-	apiVersionRouterV1.RegisterRoutes(task_transport_http.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(usersTransportHttp.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(tasksTransportHttp.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(statisticsHttpTransport.Routes()...)
 
 	// Example of usage middleware on router
 	// apiVersionRouterV2 := core_http_server.NewApiVersionRouter(

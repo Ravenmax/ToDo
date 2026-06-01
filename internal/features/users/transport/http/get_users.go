@@ -11,18 +11,23 @@ import (
 
 type GetUsersResponse []UserDTOResponce
 
+type UsersQueryParams struct {
+	limit  *int
+	offset *int
+}
+
 func (h *UsersHTTPHandlers) GetUsers(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
 
-	limit, offest, err := getLimitOffsetQueryParams(r)
+	queryParams, err := getLimitOffsetQueryParams(r)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to get 'limit'/'offset' param")
 		return
 	}
 
-	userDomains, err := h.usersService.GetUsers(ctx, limit, offest)
+	userDomains, err := h.usersService.GetUsers(ctx, queryParams.limit, queryParams.offset)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to getUsers")
 
@@ -33,18 +38,22 @@ func (h *UsersHTTPHandlers) GetUsers(rw http.ResponseWriter, r *http.Request) {
 
 }
 
-func getLimitOffsetQueryParams(r *http.Request) (*int, *int, error) {
+func getLimitOffsetQueryParams(r *http.Request) (UsersQueryParams, error) {
 	const (
 		limitQueryParamKey  = "limit"
 		offsetQueryParamKey = "offset"
 	)
-	limit, err := core_http_request.GetIntQueryParam(r, limitQueryParamKey)
+	var (
+		queryParams UsersQueryParams
+		err         error
+	)
+	queryParams.limit, err = core_http_request.GetIntQueryParam(r, limitQueryParamKey)
 	if err != nil {
-		return nil, nil, fmt.Errorf("get 'limit' query param: %w", err)
+		return UsersQueryParams{}, fmt.Errorf("get 'limit' query param: %w", err)
 	}
-	offset, err := core_http_request.GetIntQueryParam(r, offsetQueryParamKey)
+	queryParams.offset, err = core_http_request.GetIntQueryParam(r, offsetQueryParamKey)
 	if err != nil {
-		return nil, nil, fmt.Errorf("get 'offset' query param: %w", err)
+		return UsersQueryParams{}, fmt.Errorf("get 'offset' query param: %w", err)
 	}
-	return limit, offset, nil
+	return queryParams, nil
 }

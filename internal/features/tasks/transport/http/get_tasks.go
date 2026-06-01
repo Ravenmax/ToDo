@@ -11,17 +11,23 @@ import (
 
 type GetTasksResponse []TaskDTOResponce
 
+type TasksQueryParams struct {
+	userid *int
+	limit  *int
+	offset *int
+}
+
 func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
 
-	userid, limit, offset, err := getUserIDLimitOffsetQueryParams(r)
+	queryParams, err := getUserIDLimitOffsetQueryParams(r)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to get userid/limit/offset query params")
 		return
 	}
-	taskDomains, err := h.tasksService.GetTasks(ctx, userid, limit, offset)
+	taskDomains, err := h.tasksService.GetTasks(ctx, queryParams.userid, queryParams.limit, queryParams.offset)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to get tasks")
 	}
@@ -31,25 +37,28 @@ func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 
 }
 
-func getUserIDLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) {
+func getUserIDLimitOffsetQueryParams(r *http.Request) (TasksQueryParams, error) {
 	const (
 		limitQueryParamKey  = "limit"
 		offsetQueryParamKey = "offset"
 		userIDQueryParamKey = "user_id"
 	)
+	var (
+		resultQueryParams TasksQueryParams
+		err               error
+	)
+	resultQueryParams.limit, err = core_http_request.GetIntQueryParam(r, limitQueryParamKey)
+	if err != nil {
+		return TasksQueryParams{}, fmt.Errorf("get 'limit' query param: %w", err)
+	}
+	resultQueryParams.offset, err = core_http_request.GetIntQueryParam(r, offsetQueryParamKey)
+	if err != nil {
+		return TasksQueryParams{}, fmt.Errorf("get 'offset' query param: %w", err)
+	}
+	resultQueryParams.userid, err = core_http_request.GetIntQueryParam(r, userIDQueryParamKey)
+	if err != nil {
+		return TasksQueryParams{}, fmt.Errorf("get 'limit' query param: %w", err)
+	}
 
-	limit, err := core_http_request.GetIntQueryParam(r, limitQueryParamKey)
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get 'limit' query param: %w", err)
-	}
-	offset, err := core_http_request.GetIntQueryParam(r, offsetQueryParamKey)
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get 'offset' query param: %w", err)
-	}
-	userID, err := core_http_request.GetIntQueryParam(r, userIDQueryParamKey)
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get 'limit' query param: %w", err)
-	}
-
-	return userID, limit, offset, nil
+	return resultQueryParams, nil
 }
