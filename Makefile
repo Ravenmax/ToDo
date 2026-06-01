@@ -71,4 +71,14 @@ todoapp-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs/ && \
 	export POSTGRES_HOST=LOCALHOST && \
 	go mod tidy && \
-	go run ${PROJECT_ROOT}/cmd/todoapp/main.go		
+	go run ${PROJECT_ROOT}/cmd/todoapp/main.go	
+
+logs-cleanup:
+	@read -p "Delete all logs files? Data loss risk. [y/N]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		rm -rf ${PROJECT_ROOT}/out/logs  && \
+		echo "Logs files cleaned"; \
+	else \
+		echo "Logs cleanup cancelled"; \
+	fi
+	
