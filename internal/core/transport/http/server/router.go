@@ -33,7 +33,7 @@ func NewApiVersionRouter(
 }
 func (r *APIVersionRouter) RegisterRoutes(routes ...Route) {
 	for _, route := range routes {
-		pattern := fmt.Sprintf("%s %s", route.Mehtod, route.Path)
+		pattern := fmt.Sprintf("%s %s", route.Method, route.Path)
 		r.Handle(pattern, route.WithMiddleware())
 	}
 }
