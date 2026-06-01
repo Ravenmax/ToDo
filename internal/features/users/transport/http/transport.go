@@ -45,12 +45,12 @@ func NewUsersHTTPHandler(usersService UsersService) *UsersHTTPHandlers {
 func (h *UsersHTTPHandlers) Routes() []core_http_server.Route {
 	return []core_http_server.Route{
 		{
-			Mehtod:  http.MethodPost,
+			Method:  http.MethodPost,
 			Path:    "/users",
 			Handler: h.CreateUser,
 		},
 		{
-			Mehtod:  http.MethodGet,
+			Method:  http.MethodGet,
 			Path:    "/users",
 			Handler: h.GetUsers,
 			// Middleware: []core_http_middleware.Middleware{
@@ -59,17 +59,17 @@ func (h *UsersHTTPHandlers) Routes() []core_http_server.Route {
 			// },
 		},
 		{
-			Mehtod:  http.MethodGet,
+			Method:  http.MethodGet,
 			Path:    "/users/{id}",
 			Handler: h.GetUser,
 		},
 		{
-			Mehtod:  http.MethodDelete,
+			Method:  http.MethodDelete,
 			Path:    "/users/{id}",
 			Handler: h.DeleteUser,
 		},
 		{
-			Mehtod:  http.MethodPatch,
+			Method:  http.MethodPatch,
 			Path:    "/users/{id}",
 			Handler: h.PatchUser,
 		},
