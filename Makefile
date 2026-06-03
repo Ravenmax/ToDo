@@ -2,7 +2,7 @@ include .env
 export
 
 
-PROJECT_ROOT := $(shell pwd)
+PROJECT_ROOT = $(pwd)
 POSTGRES_URL := 'postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)?sslmode=disable'
 MIGRATIONS_PATH := ./migrations
 
@@ -67,12 +67,6 @@ migrate-force:
 		-path $(MIGRATIONS_PATH) \
 		"$(VERSION)"
 
-todoapp-run:
-	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs/ && \
-	export POSTGRES_HOST=LOCALHOST && \
-	go mod tidy && \
-	go run ${PROJECT_ROOT}/cmd/todoapp/main.go	
-
 logs-cleanup:
 	@read -p "Delete all logs files? Data loss risk. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
@@ -81,4 +75,15 @@ logs-cleanup:
 	else \
 		echo "Logs cleanup cancelled"; \
 	fi
-	
+
+todoapp-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs/ && \
+	export POSTGRES_HOST=LOCALHOST && \
+	go mod tidy && \
+	go run ${PROJECT_ROOT}/cmd/todoapp/main.go	
+
+todoapp-deploy:
+	docker compose up -d --build todoapp
+
+ps:
+	@docker compose ps
