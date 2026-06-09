@@ -2,7 +2,7 @@ include .env
 export
 
 
-PROJECT_ROOT := $(pwd)
+PROJECT_ROOT = $(pwd)
 POSTGRES_URL := 'postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)?sslmode=disable'
 MIGRATIONS_PATH := ./migrations
 
@@ -88,15 +88,13 @@ todoapp-deploy:
 todoapp-undeploy:
 	@docker compose down todoapp
 	
-
 swagger-gen:
 	@docker compose run --rm swagger \
 		init \
-		-g cmd/todoapp/main.go \
+		-g cmd\todoapp\main.go \ 
 		-o docs \
 		--parseInternal \
 		--parseDependency
 
 ps:
 	@docker compose ps
-

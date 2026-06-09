@@ -17,10 +17,10 @@ type QueryParams struct {
 	to     *time.Time
 }
 type GetStatisticsResponse struct {
-	TaskCreated               int      `json:"task_created"`
-	TaskCompleted             int      `json:"task_completed"`
-	TaskCompletedRate         *float64 `json:"task_completed_rate"`
-	TaskAverageCompletionTIme *string  `json:"task_average_completed_time"`
+	TaskCreated               int      `json:"task_created"                          example:"100"`
+	TaskCompleted             int      `json:"task_completed"                        example:"30"`
+	TaskCompletedRate         *float64 `json:"task_completed_rate"                   example:"30"`
+	TaskAverageCompletionTIme *string  `json:"task_average_completed_time"           example:"1m30s"`
 }
 
 func toDTOFromDomain(statistics domain.Statistics) GetStatisticsResponse {
@@ -37,6 +37,19 @@ func toDTOFromDomain(statistics domain.Statistics) GetStatisticsResponse {
 		TaskAverageCompletionTIme: avgTime,
 	}
 }
+
+// GetStatistics  godoc
+// @Summary      Статистика по задачам
+// @Description  Просмотр статистики по задачам с опциональными параметрами
+// @Tags         Statistics
+// @Produce      json
+// @Param        userid query int false "Задачи пользователя с ID"
+// @Param        from query string false "Начало промежутка рассмотрения статистики(включительно), формат YYYY-MM-DD" format(date)
+// @Param        to query string false "Конец промежутка рассмотрения статистики(не включительно), формат YYYY-MM-DD" format(date)
+// @Success      200  {object}  GetStatisticsResponse "Успешное получение статистики по задачам"
+// @Failure      400  {object}  core_http_response.ErrorResponse "Bad request"
+// @Failure      500  {object}  core_http_response.ErrorResponse "Internal server error"
+// @Router		 /statistics [get]
 func (h *StattisticsHTTPHandler) GetStatistics(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

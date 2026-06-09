@@ -1,0 +1,603 @@
+basePath: /api/v1
+definitions:
+  github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse:
+    properties:
+      error:
+        example: full error text
+        type: string
+      message:
+        example: short human message
+        type: string
+    type: object
+  internal_features_statistics_transport_http.GetStatisticsResponse:
+    properties:
+      task_average_completed_time:
+        example: 1m30s
+        type: string
+      task_completed:
+        example: 30
+        type: integer
+      task_completed_rate:
+        example: 30
+        type: number
+      task_created:
+        example: 100
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.CreateTaskRequest:
+    properties:
+      author_user_id:
+        example: 2
+        type: integer
+      description:
+        example: Сделать домашние задание по математике
+        maxLength: 1000
+        minLength: 1
+        type: string
+      title:
+        example: Сделать дз
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - author_user_id
+    - title
+    type: object
+  internal_features_tasks_transport_http.CreateTaskResponse:
+    properties:
+      authorUserID:
+        example: 2
+        type: integer
+      completed:
+        example: true
+        type: boolean
+      completedAt:
+        example: 11.02.2026
+        type: string
+      createdAt:
+        example: 10.02.2026
+        type: string
+      description:
+        example: срочно
+        type: string
+      id:
+        example: 10
+        type: integer
+      title:
+        example: Помыть посуду
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.PatchTaskReponse:
+    properties:
+      authorUserID:
+        example: 2
+        type: integer
+      completed:
+        example: true
+        type: boolean
+      completedAt:
+        example: 11.02.2026
+        type: string
+      createdAt:
+        example: 10.02.2026
+        type: string
+      description:
+        example: срочно
+        type: string
+      id:
+        example: 10
+        type: integer
+      title:
+        example: Помыть посуду
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.PatchTaskRequest:
+    type: object
+  internal_features_tasks_transport_http.TaskDTOResponce:
+    properties:
+      authorUserID:
+        example: 2
+        type: integer
+      completed:
+        example: true
+        type: boolean
+      completedAt:
+        example: 11.02.2026
+        type: string
+      createdAt:
+        example: 10.02.2026
+        type: string
+      description:
+        example: срочно
+        type: string
+      id:
+        example: 10
+        type: integer
+      title:
+        example: Помыть посуду
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_users_transport_http.CreateUserRequest:
+    properties:
+      full_name:
+        example: Ivan Ivanov
+        maxLength: 100
+        minLength: 3
+        type: string
+      phone_number:
+        description: можно использовать e164 в валидации номера телефона
+        example: "+73336669999"
+        maxLength: 100
+        minLength: 10
+        type: string
+    required:
+    - full_name
+    type: object
+  internal_features_users_transport_http.CreateUserResponse:
+    properties:
+      full_name:
+        example: Ivanov Ivan
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+73336669999"
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_users_transport_http.GetUserReponse:
+    properties:
+      full_name:
+        example: Ivanov Ivan
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+73336669999"
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_users_transport_http.PatchUserRequest:
+    properties:
+      full_name:
+        example: Иван Иванович
+        type: string
+      phone_number:
+        example: "+73336669999"
+        type: string
+    type: object
+  internal_features_users_transport_http.PatchUserResponse:
+    properties:
+      full_name:
+        example: Ivanov Ivan
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+73336669999"
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+  internal_features_users_transport_http.UserDTOResponce:
+    properties:
+      full_name:
+        example: Ivanov Ivan
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+73336669999"
+        type: string
+      version:
+        example: 3
+        type: integer
+    type: object
+host: 127.0.0.1:5050
+info:
+  contact: {}
+  description: ToDo application rest api scheme
+  title: ToDo API
+  version: "1.0"
+paths:
+  /statistics:
+    get:
+      description: Просмотр статистики по задачам с опциональными параметрами
+      parameters:
+      - description: Задачи пользователя с ID
+        in: query
+        name: userid
+        type: integer
+      - description: Начало промежутка рассмотрения статистики(включительно), формат
+          YYYY-MM-DD
+        format: date
+        in: query
+        name: from
+        type: string
+      - description: Конец промежутка рассмотрения статистики(не включительно), формат
+          YYYY-MM-DD
+        format: date
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное получение статистики по задачам
+          schema:
+            $ref: '#/definitions/internal_features_statistics_transport_http.GetStatisticsResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Статистика по задачам
+      tags:
+      - Statistics
+  /tasks:
+    get:
+      description: Просмотр списка задач с опциональными параметрами
+      parameters:
+      - description: Задачи пользователя с ID
+        in: query
+        name: userid
+        type: integer
+      - description: Размер страницы с задачами
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение страницы с задачами
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное получение списка задач
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_tasks_transport_http.TaskDTOResponce'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Список задач
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Создание задачи в системе из json body запроса
+      parameters:
+      - description: CreateTask тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешно созданный пользователь
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Создание задачи
+      tags:
+      - Tasks
+  /tasks/{id}:
+    delete:
+      description: Удаление задачи по входящему ID
+      parameters:
+      - description: ID удаляемой задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Успешное удаление задачи
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Удаление задачи
+      tags:
+      - Tasks
+    get:
+      description: Получения задачи по ID
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Найденный пользователь
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Получение задачи
+      tags:
+      - Tasks
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Обновление задачи с заданным ID по JSON из тела запроса
+        ### Логика обновления полей (Three-state logic):
+        1.**Поле явно не передано**: `"description"`, значение в БД не меняется.
+        1.**Явно передано значение**: `"description":"сделать дз по русскому"`, устанавливаем новое описание.
+        1.**Поле явно не передано**: `"description":null`, очищаем поле в БД.
+        Ограничения: `title` не может быть null.
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: PatchTaskRequest тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное обновление задачи
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskReponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Обновление задачи
+      tags:
+      - Tasks
+  /users:
+    get:
+      description: Просмотр списка пользователей с опциональными параметрами
+      parameters:
+      - description: Размер страницы с пользователями
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение страницы с пользователями
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное получение списка пользователей
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponce'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Список пользователей
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Создание пользователя в системе из json body запроса
+      parameters:
+      - description: CreateUser тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешно созданный пользователь
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.CreateUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Создание пользователя
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      description: Удаление пользователя по входящему ID
+      parameters:
+      - description: ID удаляемого пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Успешное удаление пользователя
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Удаление пользователя
+      tags:
+      - Users
+    get:
+      description: Получения пользователя по ID
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Найденный пользователь
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.GetUserReponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Получение пользователя
+      tags:
+      - Users
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Обновления пользователя с заданным ID по JSON из тела запроса
+        ### Логика обновления полей (Three-state logic):
+        1.**Поле явно не передано**: `"phone_number"`, значение в БД не меняется.
+        1.**Явно передано значение**: `"phone_number":"+73336669999"`, устанавливаем новый номер телефона.
+        1.**Поле явно не передано**: `"phone_number":null`, очищаем поле в БД.
+        Ограничения: `full_name` не может быть null.
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: PatchUserRequest тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.PatchUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное обновление пользователя
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.PatchUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Ravenmax_ToDo_internal_core_transport_http_response.ErrorResponse'
+      summary: Обновление пользователя
+      tags:
+      - Users
+swagger: "2.0"
