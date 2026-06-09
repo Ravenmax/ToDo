@@ -17,6 +17,19 @@ type TasksQueryParams struct {
 	offset *int
 }
 
+// GetTasks  godoc
+// @Summary      Список задач
+// @Description  Просмотр списка задач с опциональными параметрами
+// @Tags         Users
+// @Produce      json
+// @Param        userid query int false "Задачи пользователя с ID"
+// @Param        limit query int false "Размер страницы с задачами"
+// @Param        offset query int false "Смещение страницы с задачами"
+// @Success      200  {object}  GetTasksResponse "Успешное получение списка задач"
+// @Failure      400  {object}  core_http_response.ErrorResponse "Bad request"
+// @Failure      404  {object}  core_http_response.ErrorResponse "User not found"
+// @Failure      500  {object}  core_http_response.ErrorResponse "Internal server error"
+// @Router		 /tasks [get]
 func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

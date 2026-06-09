@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Ravenmax/ToDo/docs"
 	core_logger "github.com/Ravenmax/ToDo/internal/core/logger"
 	core_http_middleware "github.com/Ravenmax/ToDo/internal/core/transport/http/middelware"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"go.uber.org/zap"
 )
 
-type HTTPserver struct {
+type HTTPServer struct {
 	mux        *http.ServeMux
 	config     Config
 	log        *core_logger.Logger
@@ -22,8 +24,8 @@ func NewHTTPServer(
 	config Config,
 	log *core_logger.Logger,
 	middleware ...core_http_middleware.Middleware,
-) *HTTPserver {
-	return &HTTPserver{
+) *HTTPServer {
+	return &HTTPServer{
 		mux:        http.NewServeMux(),
 		config:     config,
 		log:        log,
@@ -31,7 +33,7 @@ func NewHTTPServer(
 	}
 }
 
-func (s *HTTPserver) RegisterAPIRouters(routers ...*APIVersionRouter) {
+func (s *HTTPServer) RegisterAPIRouters(routers ...*APIVersionRouter) {
 	for _, router := range routers {
 		prefix := "/api/" + string(router.apiVersion)
 
@@ -41,7 +43,27 @@ func (s *HTTPserver) RegisterAPIRouters(routers ...*APIVersionRouter) {
 		)
 	}
 }
-func (s *HTTPserver) Run(ctx context.Context) error {
+func (s *HTTPServer) RegisterSwagger() {
+	s.mux.Handle(
+		"/swagger/",
+		httpSwagger.Handler(
+			httpSwagger.URL("/swagger/doc.json"),
+		),
+	)
+
+	httpSwagger.DefaultModelsExpandDepth(-1)
+
+	s.mux.HandleFunc(
+		"/swagger/doc.json",
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(docs.SwaggerInfo.ReadDoc()))
+		},
+	)
+}
+
+func (s *HTTPServer) Run(ctx context.Context) error {
 	mux := core_http_middleware.ChainMiddleware(s.mux, s.middleware...) //сначала оборачиваем мультплексор в мидлвейры
 	//создаем сервер с полученным адресом и мультиплексером уже обернутым в мидлвейры
 	server := &http.Server{

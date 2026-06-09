@@ -10,12 +10,23 @@ import (
 )
 
 type CreateUserRequest struct {
-	FullName    string  `json:"full_name" validate:"required,min=3,max=100"`
-	PhoneNumber *string `json:"phone_number" validate:"omitempty,min=10,max=100,startswith=+"` //можно использовать e164 в валидации номера телефона
+	FullName    string  `json:"full_name"      validate:"required,min=3,max=100"                    example:"Ivan Ivanov"`
+	PhoneNumber *string `json:"phone_number"   validate:"omitempty,min=10,max=100,startswith=+"     example:"+73336669999"` //можно использовать e164 в валидации номера телефона
 }
 
 type CreateUserResponse UserDTOResponce
 
+// CreateUser  godoc
+// @Summary      Создание пользователя
+// @Description  Создание пользователя в системе из json body запроса
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        request body CreateUserRequest true "CreateUser тело запроса"
+// @Success      201  {object}  CreateUserResponse "Успешно созданный пользователь"
+// @Failure      400  {object}  core_http_response.ErrorResponse "Bad request"
+// @Failure      500  {object}  core_http_response.ErrorResponse "Internal server error"
+// @Router		 /users [post]
 func (h *UsersHTTPHandlers) CreateUser(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
