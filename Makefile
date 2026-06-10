@@ -1,8 +1,9 @@
 include .env
 
 export 
-##замена слешей что бы работало и под виндовс и под bash
-PROJECT_ROOT := $(subst \,/,$(shell cd && pwd))
+PROJECT_ROOT := $(shell pwd)
+##для windows
+##PROJECT_ROOT :=$(CURDIR)
 POSTGRES_URL := 'postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)?sslmode=disable'
 MIGRATIONS_PATH := ./migrations
 
