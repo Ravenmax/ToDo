@@ -22,6 +22,9 @@ import (
 	users_postgres_repository "github.com/Ravenmax/ToDo/internal/features/users/repository/postgres"
 	users_service "github.com/Ravenmax/ToDo/internal/features/users/service"
 	users_transport_http "github.com/Ravenmax/ToDo/internal/features/users/transport/http"
+	web_repository_fs "github.com/Ravenmax/ToDo/internal/features/web/repository/file_system"
+	web_service "github.com/Ravenmax/ToDo/internal/features/web/service"
+	web_transport_http "github.com/Ravenmax/ToDo/internal/features/web/transport/http"
 	"go.uber.org/zap"
 
 	_ "github.com/Ravenmax/ToDo/docs"
@@ -78,6 +81,11 @@ func main() {
 	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
 	statisticsHttpTransport := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
 
+	logger.Debug("initializing features", zap.String("feature", "tasks"))
+	webRepository := web_repository_fs.NewWebRepository()
+	webService := web_service.NewWebService(webRepository)
+	webTransportHttp := web_transport_http.NewWebHTTPHandler(webService)
+
 	// создаем транспорт, роуты и апиверсии для сервера и связываем между собой
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
@@ -102,6 +110,8 @@ func main() {
 	// apiVersionRouterV2.RegisterRoutes(users_transport_http.Routes()...)
 
 	httpServer.RegisterAPIRouters(apiVersionRouterV1)
+	//отдельно регистрируем роуты для mainPage
+	httpServer.RegisterRoutes(webTransportHttp.Routes()...)
 
 	httpServer.RegisterSwagger()
 

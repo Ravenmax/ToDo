@@ -1,8 +1,8 @@
 include .env
-export
 
-
-PROJECT_ROOT := $(pwd)
+export 
+##замена слешей что бы работало и под виндовс и под bash
+PROJECT_ROOT := $(subst \,/,$(shell cd && pwd))
 POSTGRES_URL := 'postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)?sslmode=disable'
 MIGRATIONS_PATH := ./migrations
 
@@ -83,7 +83,7 @@ todoapp-run:
 	go run ${PROJECT_ROOT}/cmd/todoapp/main.go	
 
 todoapp-deploy:
-	docker compose up -d --build todoapp
+	@docker compose up -d --build todoapp
 
 todoapp-undeploy:
 	@docker compose down todoapp
