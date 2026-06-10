@@ -5,19 +5,20 @@ import (
 	"regexp"
 
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
+	"github.com/google/uuid"
 )
 
 type User struct {
-	ID      int
-	Version int64
+	ID      uuid.UUID
+	Version int
 
 	FullName    string
 	PhoneNumber *string
 }
 
 func NewUser(
-	id int,
-	version int64,
+	id uuid.UUID,
+	version int,
 	fullName string,
 	phoneNumber *string,
 ) User {
@@ -27,6 +28,25 @@ func NewUser(
 		FullName:    fullName,
 		PhoneNumber: phoneNumber,
 	}
+}
+
+// CreateUser создаёт нового пользователя с автоматически сгенерированными
+// ID (UUID v4) и начальной версией 1.
+func CreateUser(
+	fullName string,
+	phoneNumber *string,
+) User {
+	var (
+		id      = uuid.New()
+		version = 1
+	)
+
+	return NewUser(
+		id,
+		version,
+		fullName,
+		phoneNumber,
+	)
 }
 
 func NewUserPatch(
@@ -40,7 +60,7 @@ func NewUserPatch(
 }
 
 func NewUserUninitialized(fullName string, phoneNumber *string) User {
-	return NewUser(UninitializedID, UninitializedVersion, fullName, phoneNumber)
+	return NewUser(uuid.New(), UninitializedVersion, fullName, phoneNumber)
 }
 
 func (u *User) Validate() error {

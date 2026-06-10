@@ -7,11 +7,12 @@ import (
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
+	"github.com/google/uuid"
 )
 
 func (s *StatisticsService) GetStatistics(
 	ctx context.Context,
-	userID *int,
+	userID *uuid.UUID,
 	from *time.Time,
 	to *time.Time,
 ) (domain.Statistics, error) {

@@ -18,13 +18,16 @@ func (r *TasksRepository) Createtask(
 	defer cancel()
 
 	query := `
-	INSERT INTO todoapp.tasks (title, description, completed, created_at, completed_at,	author_user_id)
-	VALUES ($1, $2, $3, $4, $5, $6)
+	INSERT INTO todoapp.tasks (id, version, title, description, completed, created_at, completed_at, author_user_id)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	RETURNING id, version, title, description, completed, created_at, completed_at, author_user_id;
 	`
+
 	row := r.pool.QueryRow(
 		ctx,
 		query,
+		task.ID,
+		task.Version,
 		task.Title,
 		task.Description,
 		task.Completed,
@@ -32,18 +35,9 @@ func (r *TasksRepository) Createtask(
 		task.CompletedAt,
 		task.AuthorUserID,
 	)
+
 	var taskModel TaskModel
-	err := row.Scan(
-		&taskModel.ID,
-		&taskModel.Version,
-		&taskModel.Title,
-		&taskModel.Description,
-		&taskModel.Completed,
-		&taskModel.CreatedAt,
-		&taskModel.CompletedAt,
-		&taskModel.AuthorUserId,
-	)
-	if err != nil {
+	if err := taskModel.Scan(row); err != nil {
 		if errors.Is(err, core_postgres_pool.ErrViolatesForeignKey) {
 			return domain.Task{},
 				fmt.Errorf(

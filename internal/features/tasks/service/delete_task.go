@@ -3,11 +3,13 @@ package tasks_service
 import (
 	"context"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 func (s *TasksService) DeleteTask(
 	ctx context.Context,
-	taskid int,
+	taskid uuid.UUID,
 ) error {
 	err := s.tasksRepository.DeleteTask(ctx, taskid)
 	if err != nil {

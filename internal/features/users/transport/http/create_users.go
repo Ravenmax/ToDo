@@ -3,7 +3,6 @@ package users_transport_http
 import (
 	"net/http"
 
-	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_logger "github.com/Ravenmax/ToDo/internal/core/logger"
 	core_http_request "github.com/Ravenmax/ToDo/internal/core/transport/http/request"
 	core_http_response "github.com/Ravenmax/ToDo/internal/core/transport/http/response"
@@ -37,8 +36,11 @@ func (h *UsersHTTPHandlers) CreateUser(rw http.ResponseWriter, r *http.Request) 
 		responseHandler.ErrorResponse(err, "failed to decode and validate HTTP request")
 		return
 	}
-	userDomain := domainFromDTO(request)
-	userDomain, err := h.usersService.CreateUser(ctx, userDomain)
+	userDomain, err := h.usersService.CreateUser(
+		ctx,
+		request.FullName,
+		request.PhoneNumber,
+	)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to create user")
 
@@ -48,8 +50,4 @@ func (h *UsersHTTPHandlers) CreateUser(rw http.ResponseWriter, r *http.Request) 
 	respone := CreateUserResponse(UserDTOFromDomain(userDomain))
 
 	responseHandler.JSONResponse(respone, http.StatusCreated)
-}
-
-func domainFromDTO(dto CreateUserRequest) domain.User {
-	return domain.NewUserUninitialized(dto.FullName, dto.PhoneNumber)
 }

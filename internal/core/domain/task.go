@@ -5,23 +5,24 @@ import (
 	"time"
 
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
+	"github.com/google/uuid"
 )
 
 type Task struct {
-	ID      int
-	Version int64
+	ID      uuid.UUID
+	Version int
 
 	Title        string
 	Description  *string
 	Completed    bool
 	CreatedAt    time.Time
 	CompletedAt  *time.Time
-	AuthorUserID int
+	AuthorUserID uuid.UUID
 }
 
 func NewTask(
-	id int,
-	version int64,
+	id uuid.UUID,
+	version int,
 
 	title string,
 	description *string,
@@ -29,7 +30,7 @@ func NewTask(
 	createdAt time.Time,
 	completedAt *time.Time,
 
-	authorUserID int,
+	authorUserID uuid.UUID,
 ) Task {
 	return Task{
 		ID:           id,
@@ -42,19 +43,27 @@ func NewTask(
 		AuthorUserID: authorUserID,
 	}
 }
-func NewTaskUninitialized(
+func CreateTask(
 	title string,
 	description *string,
-	authorUserId int,
+	authorUserId uuid.UUID,
 ) Task {
+	var (
+		id                     = uuid.New()
+		version                = 1
+		completed              = false
+		createdAt              = time.Now()
+		completedAt *time.Time = nil
+	)
+
 	return NewTask(
-		UninitializedID,
-		UninitializedVersion,
+		id,
+		version,
 		title,
 		description,
-		false,
-		time.Now(),
-		nil,
+		completed,
+		createdAt,
+		completedAt,
 		authorUserId,
 	)
 }

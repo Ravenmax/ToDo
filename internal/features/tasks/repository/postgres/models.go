@@ -4,19 +4,33 @@ import (
 	"time"
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
+	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
+	"github.com/google/uuid"
 )
 
 type TaskModel struct {
-	ID           int        `db:"id"`
-	Version      int64      `db:"version"`
+	ID           uuid.UUID  `db:"id"`
+	Version      int        `db:"version"`
 	Title        string     `db:"title"`
 	Description  *string    `db:"decription"`
 	Completed    bool       `db:"completed"`
 	CreatedAt    time.Time  `db:"created_at"`
 	CompletedAt  *time.Time `db:"completed_at"`
-	AuthorUserId int        `db:"author_user_id"`
+	AuthorUserID uuid.UUID  `db:"author_user_id"`
 }
 
+func (m *TaskModel) Scan(row core_postgres_pool.Row) error {
+	return row.Scan(
+		&m.ID,
+		&m.Version,
+		&m.Title,
+		&m.Description,
+		&m.Completed,
+		&m.CreatedAt,
+		&m.CompletedAt,
+		&m.AuthorUserID,
+	)
+}
 func taskDomainFromModel(taskModel TaskModel) domain.Task {
 	return domain.NewTask(
 		taskModel.ID,
@@ -26,7 +40,7 @@ func taskDomainFromModel(taskModel TaskModel) domain.Task {
 		taskModel.Completed,
 		taskModel.CreatedAt,
 		taskModel.CompletedAt,
-		taskModel.AuthorUserId,
+		taskModel.AuthorUserID,
 	)
 }
 

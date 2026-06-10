@@ -2,17 +2,15 @@ package tasks_postgres_repository
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
-	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
-	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
+	"github.com/google/uuid"
 )
 
 func (r *TasksRepository) GetTasks(
 	ctx context.Context,
-	userID *int,
+	userID *uuid.UUID,
 	limit *int,
 	offset *int,
 ) ([]domain.Task, error) {
@@ -23,11 +21,11 @@ func (r *TasksRepository) GetTasks(
 	query = `
 	SELECT id, version, title, description, completed, created_at, completed_at, author_user_id
 	FROM todoapp.tasks
-	
 	%s
 	ORDER BY id ASC
 	LIMIT $1
-	OFFSET $2;`
+	OFFSET $2;
+	`
 
 	args := []any{limit, offset}
 
@@ -48,28 +46,10 @@ func (r *TasksRepository) GetTasks(
 	var taskModels []TaskModel
 	for rows.Next() {
 		var taskModel TaskModel
-		err := rows.Scan(
-			&taskModel.ID,
-			&taskModel.Version,
-			&taskModel.Title,
-			&taskModel.Description,
-			&taskModel.Completed,
-			&taskModel.CreatedAt,
-			&taskModel.CompletedAt,
-			&taskModel.AuthorUserId,
-		)
-		if err != nil {
-			if errors.Is(err, core_postgres_pool.ErrViolatesForeignKey) {
-				return nil,
-					fmt.Errorf(
-						"%v, user withID=%d not found: %w",
-						err,
-						userID,
-						core_errors.ErrNotFound,
-					)
-			}
-			return nil, fmt.Errorf("scan error: %w", err)
+		if err := taskModel.Scan(rows); err != nil {
+			return nil, fmt.Errorf("scan tasks: %w", err)
 		}
+
 		taskModels = append(taskModels, taskModel)
 	}
 	if err := rows.Err(); err != nil {

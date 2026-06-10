@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
+	"github.com/google/uuid"
 )
 
 type TasksService struct {
@@ -16,21 +17,21 @@ type TasksRepository interface {
 	) (domain.Task, error)
 	GetTasks(
 		ctx context.Context,
-		userID *int,
+		userID *uuid.UUID,
 		limit *int,
 		offset *int,
 	) ([]domain.Task, error)
 	GetTask(
 		ctx context.Context,
-		taskid int,
+		taskid uuid.UUID,
 	) (domain.Task, error)
 	DeleteTask(
 		ctx context.Context,
-		taskid int,
+		taskid uuid.UUID,
 	) error
 	PatchTask(
 		ctx context.Context,
-		taskid int,
+		taskid uuid.UUID,
 		taskPatched domain.Task,
 	) (domain.Task, error)
 }

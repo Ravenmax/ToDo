@@ -8,11 +8,12 @@ import (
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
 	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
+	"github.com/google/uuid"
 )
 
 func (r *TasksRepository) PatchTask(
 	ctx context.Context,
-	taskid int,
+	taskid uuid.UUID,
 	taskPatched domain.Task,
 ) (domain.Task, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
@@ -40,17 +41,7 @@ func (r *TasksRepository) PatchTask(
 		taskPatched.Version,
 	)
 	var taskModel TaskModel
-	err := row.Scan(
-		&taskModel.ID,
-		&taskModel.Version,
-		&taskModel.Title,
-		&taskModel.Description,
-		&taskModel.Completed,
-		&taskModel.CreatedAt,
-		&taskModel.CompletedAt,
-		&taskModel.AuthorUserId,
-	)
-	if err != nil {
+	if err := taskModel.Scan(row); err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.Task{}, fmt.Errorf("user with ID: %d concurency contest: %w", taskid, core_errors.ErrConflict)
 		}

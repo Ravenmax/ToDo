@@ -7,6 +7,7 @@ import (
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_http_server "github.com/Ravenmax/ToDo/internal/core/transport/http/server"
+	"github.com/google/uuid"
 )
 
 type StattisticsHTTPHandler struct {
@@ -15,7 +16,7 @@ type StattisticsHTTPHandler struct {
 type StatisticsService interface {
 	GetStatistics(
 		ctx context.Context,
-		userID *int,
+		userID *uuid.UUID,
 		from *time.Time,
 		to *time.Time,
 	) (domain.Statistics, error)

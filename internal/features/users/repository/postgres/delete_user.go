@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
+	"github.com/google/uuid"
 )
 
 func (r *UserRepository) DeleteUser(
 	ctx context.Context,
-	id int,
+	id uuid.UUID,
 ) error {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()

@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
+	"github.com/google/uuid"
 )
 
 func (s *TasksService) GetTask(
 	ctx context.Context,
-	taskid int,
+	taskid uuid.UUID,
 ) (domain.Task, error) {
 
 	task, err := s.tasksRepository.GetTask(ctx, taskid)
