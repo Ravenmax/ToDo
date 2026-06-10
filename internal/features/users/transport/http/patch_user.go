@@ -68,7 +68,7 @@ func (h *UsersHTTPHandlers) PatchUser(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
-	userID, err := core_http_request.GetIntPathValues(r, "id")
+	userID, err := core_http_request.GetUUIDPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,

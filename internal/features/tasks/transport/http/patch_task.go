@@ -66,7 +66,7 @@ func (h *TasksHTTPHandler) PatchTask(rw http.ResponseWriter, r *http.Request) {
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
 
-	taskID, err := core_http_request.GetIntPathValues(r, "id")
+	taskID, err := core_http_request.GetUUIDPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,

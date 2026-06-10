@@ -8,15 +8,17 @@ import (
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
 	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
+	"github.com/google/uuid"
 )
 
 func (r *UserRepository) PatchUser(
 	ctx context.Context,
-	id int,
+	id uuid.UUID,
 	user domain.User,
 ) (domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
+
 	query := `
 	UPDATE todoapp.users
 	SET

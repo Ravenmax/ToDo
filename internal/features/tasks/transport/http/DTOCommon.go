@@ -4,17 +4,18 @@ import (
 	"time"
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
+	"github.com/google/uuid"
 )
 
 type TaskDTOResponce struct {
-	ID           int        `json:"id"                  example:"10"`
-	Version      int64      `json:"version"             example:"3"`
+	ID           uuid.UUID  `json:"id"                  example:"10"`
+	Version      int        `json:"version"             example:"3"`
 	Title        string     `json:"title"               example:"Помыть посуду"`
 	Desctiption  *string    `json:"description"         example:"срочно"`
 	Completed    bool       `json:"completed"           example:"true"`
 	CreatedAt    time.Time  `json:"createdAt"           example:"10.02.2026"`
 	CompletedAt  *time.Time `json:"completedAt"         example:"11.02.2026"`
-	AuthorUserID int        `json:"authorUserID"        example:"2"`
+	AuthorUserID uuid.UUID  `json:"authorUserID"        example:"2"`
 }
 
 func TaskDTOFromDomain(task domain.Task) TaskDTOResponce {

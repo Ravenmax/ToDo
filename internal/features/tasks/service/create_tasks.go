@@ -5,12 +5,20 @@ import (
 	"fmt"
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
+	"github.com/google/uuid"
 )
 
 func (s *TasksService) CreateTask(
 	ctx context.Context,
-	task domain.Task,
+	title string,
+	description *string,
+	authorUserID uuid.UUID,
 ) (domain.Task, error) {
+	task := domain.CreateTask(
+		title,
+		description,
+		authorUserID,
+	)
 	if err := task.Validate(); err != nil {
 		return domain.Task{}, fmt.Errorf("validate task domain: %w", err)
 	}

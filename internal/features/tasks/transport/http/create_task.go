@@ -7,12 +7,13 @@ import (
 	core_logger "github.com/Ravenmax/ToDo/internal/core/logger"
 	core_http_request "github.com/Ravenmax/ToDo/internal/core/transport/http/request"
 	core_http_response "github.com/Ravenmax/ToDo/internal/core/transport/http/response"
+	"github.com/google/uuid"
 )
 
 type CreateTaskRequest struct {
-	Title        string  `json:"title" validate:"required,min=1,max=100"            example:"Сделать дз"`
-	Description  *string `json:"description" validate:"omitempty,min=1,max=1000"    example:"Сделать домашние задание по математике"`
-	AuthorUserID int     `json:"author_user_id" validate:"required"                 example:"2"`
+	Title        string    `json:"title" validate:"required,min=1,max=100"            example:"Сделать дз"`
+	Description  *string   `json:"description" validate:"omitempty,min=1,max=1000"    example:"Сделать домашние задание по математике"`
+	AuthorUserID uuid.UUID `json:"author_user_id" validate:"required"                 example:"2"`
 }
 
 type CreateTaskResponse TaskDTOResponce
@@ -40,12 +41,17 @@ func (h *TasksHTTPHandler) CreateTask(rw http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	taskDomain := domain.NewTaskUninitialized(
+	taskDomain := domain.CreateTask(
 		request.Title,
 		request.Description,
 		request.AuthorUserID,
 	)
-	taskDomain, err := h.tasksService.CreateTask(ctx, taskDomain)
+	taskDomain, err := h.tasksService.CreateTask(
+		ctx,
+		request.Title,
+		request.Description,
+		request.AuthorUserID,
+	)
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,

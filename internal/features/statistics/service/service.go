@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
+	"github.com/google/uuid"
 )
 
 type StatisticsService struct {
@@ -13,7 +14,7 @@ type StatisticsService struct {
 type StatisticsRepository interface {
 	GetTasks(
 		ctx context.Context,
-		userID *int,
+		userID *uuid.UUID,
 		from *time.Time,
 		to *time.Time,
 	) ([]domain.Task, error)

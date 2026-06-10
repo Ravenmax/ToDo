@@ -6,20 +6,15 @@ import (
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
+	"github.com/google/uuid"
 )
 
 func (s *TasksService) GetTasks(
 	ctx context.Context,
-	userID *int,
+	userID *uuid.UUID,
 	limit *int,
 	offset *int,
 ) ([]domain.Task, error) {
-	if userID != nil && *userID < 0 {
-		return nil, fmt.Errorf(
-			"user id must be non-negative: %w",
-			core_errors.ErrInvalidArgument,
-		)
-	}
 	if limit != nil && *limit < 0 {
 		return nil, fmt.Errorf(
 			"limit must be non-negative: %w",

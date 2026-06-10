@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
+	"github.com/google/uuid"
 )
 
 func (s *UsersService) PatchUser(
 	ctx context.Context,
-	id int,
+	id uuid.UUID,
 	patch domain.UserPatch,
 ) (domain.User, error) {
 	user, err := s.usersRepository.GetUser(ctx, id)

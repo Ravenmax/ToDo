@@ -7,12 +7,13 @@ import (
 	core_logger "github.com/Ravenmax/ToDo/internal/core/logger"
 	core_http_request "github.com/Ravenmax/ToDo/internal/core/transport/http/request"
 	core_http_response "github.com/Ravenmax/ToDo/internal/core/transport/http/response"
+	"github.com/google/uuid"
 )
 
 type GetTasksResponse []TaskDTOResponce
 
 type TasksQueryParams struct {
-	userid *int
+	userid *uuid.UUID
 	limit  *int
 	offset *int
 }
@@ -68,7 +69,7 @@ func getUserIDLimitOffsetQueryParams(r *http.Request) (TasksQueryParams, error) 
 	if err != nil {
 		return TasksQueryParams{}, fmt.Errorf("get 'offset' query param: %w", err)
 	}
-	resultQueryParams.userid, err = core_http_request.GetIntQueryParam(r, userIDQueryParamKey)
+	resultQueryParams.userid, err = core_http_request.GetUUIDQueryParam(r, userIDQueryParamKey)
 	if err != nil {
 		return TasksQueryParams{}, fmt.Errorf("get 'limit' query param: %w", err)
 	}

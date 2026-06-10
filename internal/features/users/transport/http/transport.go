@@ -6,6 +6,7 @@ import (
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_http_server "github.com/Ravenmax/ToDo/internal/core/transport/http/server"
+	"github.com/google/uuid"
 )
 
 type UsersHTTPHandlers struct {
@@ -15,7 +16,8 @@ type UsersHTTPHandlers struct {
 type UsersService interface {
 	CreateUser(
 		ctx context.Context,
-		user domain.User,
+		fullName string,
+		phoneNumber *string,
 	) (domain.User, error)
 	GetUsers(
 		ctx context.Context,
@@ -24,15 +26,15 @@ type UsersService interface {
 	) ([]domain.User, error)
 	GetUser(
 		ctx context.Context,
-		id int,
+		id uuid.UUID,
 	) (domain.User, error)
 	DeleteUser(
 		ctx context.Context,
-		id int,
+		id uuid.UUID,
 	) error
 	PatchUser(
 		ctx context.Context,
-		id int,
+		id uuid.UUID,
 		patch domain.UserPatch,
 	) (domain.User, error)
 }

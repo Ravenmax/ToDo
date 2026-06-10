@@ -8,11 +8,12 @@ import (
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
 	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
+	"github.com/google/uuid"
 )
 
 func (r *TasksRepository) GetTask(
 	ctx context.Context,
-	taskid int,
+	taskid uuid.UUID,
 ) (domain.Task, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
@@ -25,24 +26,15 @@ func (r *TasksRepository) GetTask(
 	`
 	row := r.pool.QueryRow(ctx, query, taskid)
 	var taskModel TaskModel
-	err := row.Scan(
-		&taskModel.ID,
-		&taskModel.Version,
-		&taskModel.Title,
-		&taskModel.Description,
-		&taskModel.Completed,
-		&taskModel.CreatedAt,
-		&taskModel.CompletedAt,
-		&taskModel.AuthorUserId,
-	)
-	if err != nil {
+	if err := taskModel.Scan(row); err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.Task{}, fmt.Errorf(
-				"task with id=%d: %w",
+				"task with id='%s': %w",
 				taskid,
 				core_errors.ErrNotFound,
 			)
 		}
+
 		return domain.Task{}, fmt.Errorf("scan error: %w", err)
 	}
 
@@ -54,7 +46,7 @@ func (r *TasksRepository) GetTask(
 		taskModel.Completed,
 		taskModel.CreatedAt,
 		taskModel.CompletedAt,
-		taskModel.AuthorUserId,
+		taskModel.AuthorUserID,
 	)
 
 	return taskDomain, nil

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_http_server "github.com/Ravenmax/ToDo/internal/core/transport/http/server"
+	"github.com/google/uuid"
 )
 
 type TasksHTTPHandler struct {
@@ -15,25 +16,27 @@ type TasksHTTPHandler struct {
 type TasksService interface {
 	CreateTask(
 		ctx context.Context,
-		task domain.Task,
+		title string,
+		description *string,
+		authorUserID uuid.UUID,
 	) (domain.Task, error)
 	GetTasks(
 		ctx context.Context,
-		userID *int,
+		userID *uuid.UUID,
 		limit *int,
 		offset *int,
 	) ([]domain.Task, error)
 	GetTask(
 		ctx context.Context,
-		taskid int,
+		taskid uuid.UUID,
 	) (domain.Task, error)
 	DeleteTask(
 		ctx context.Context,
-		taskid int,
+		taskid uuid.UUID,
 	) error
 	PatchTask(
 		ctx context.Context,
-		taskid int,
+		taskid uuid.UUID,
 		patch domain.TaskPatch,
 	) (domain.Task, error)
 }

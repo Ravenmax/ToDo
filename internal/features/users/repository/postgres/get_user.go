@@ -8,11 +8,12 @@ import (
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
 	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
+	"github.com/google/uuid"
 )
 
 func (r *UserRepository) GetUser(
 	ctx context.Context,
-	id int,
+	id uuid.UUID,
 ) (domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
@@ -21,7 +22,9 @@ func (r *UserRepository) GetUser(
 	SELECT id, version, full_name, phone_number
 	FROM todoapp.users
 	WHERE ID=$1`
+
 	row := r.pool.QueryRow(ctx, query, id)
+
 	var userModel UserModel
 	err := row.Scan(
 		&userModel.ID,

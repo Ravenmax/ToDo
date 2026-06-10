@@ -10,11 +10,12 @@ import (
 	"github.com/Ravenmax/ToDo/internal/core/domain"
 	core_errors "github.com/Ravenmax/ToDo/internal/core/errors"
 	core_postgres_pool "github.com/Ravenmax/ToDo/internal/core/repository/postgres/pull"
+	"github.com/google/uuid"
 )
 
 func (r *StatisticsRepository) GetTasks(
 	ctx context.Context,
-	userID *int,
+	userID *uuid.UUID,
 	from *time.Time,
 	to *time.Time,
 ) ([]domain.Task, error) {
@@ -54,17 +55,7 @@ func (r *StatisticsRepository) GetTasks(
 	var taskModels []TaskModel
 	for rows.Next() {
 		var taskModel TaskModel
-		err := rows.Scan(
-			&taskModel.ID,
-			&taskModel.Version,
-			&taskModel.Title,
-			&taskModel.Description,
-			&taskModel.Completed,
-			&taskModel.CreatedAt,
-			&taskModel.CompletedAt,
-			&taskModel.AuthorUserId,
-		)
-		if err != nil {
+		if err := taskModel.Scan(rows); err != nil {
 			if errors.Is(err, core_postgres_pool.ErrViolatesForeignKey) {
 				return nil,
 					fmt.Errorf(

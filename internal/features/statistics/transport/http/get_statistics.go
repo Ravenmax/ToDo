@@ -9,10 +9,11 @@ import (
 	core_logger "github.com/Ravenmax/ToDo/internal/core/logger"
 	core_http_request "github.com/Ravenmax/ToDo/internal/core/transport/http/request"
 	core_http_response "github.com/Ravenmax/ToDo/internal/core/transport/http/response"
+	"github.com/google/uuid"
 )
 
 type QueryParams struct {
-	userId *int
+	userId *uuid.UUID
 	from   *time.Time
 	to     *time.Time
 }
@@ -78,7 +79,7 @@ func GetUserIDFromToQueryParams(r *http.Request) (QueryParams, error) {
 		resultParams QueryParams
 		err          error
 	)
-	resultParams.userId, err = core_http_request.GetIntQueryParam(r, userIDQueryParam)
+	resultParams.userId, err = core_http_request.GetUUIDQueryParam(r, userIDQueryParam)
 	if err != nil {
 		return QueryParams{}, fmt.Errorf("get `userID` params: %w", err)
 	}

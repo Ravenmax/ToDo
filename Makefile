@@ -1,9 +1,9 @@
 include .env
 
 export 
-PROJECT_ROOT := $(shell pwd)
+##PROJECT_ROOT := $(shell pwd)
 ##для windows
-##PROJECT_ROOT :=$(CURDIR)
+PROJECT_ROOT :=$(CURDIR)
 POSTGRES_URL := 'postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)?sslmode=disable'
 MIGRATIONS_PATH := ./migrations
 
