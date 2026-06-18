@@ -18,10 +18,10 @@ type QueryParams struct {
 	to     *time.Time
 }
 type GetStatisticsResponse struct {
-	TaskCreated               int      `json:"task_created"                          example:"100"`
-	TaskCompleted             int      `json:"task_completed"                        example:"30"`
-	TaskCompletedRate         *float64 `json:"task_completed_rate"                   example:"30"`
-	TaskAverageCompletionTIme *string  `json:"task_average_completed_time"           example:"1m30s"`
+	TaskCreated               int      `json:"tasks_created"                          example:"100"`
+	TaskCompleted             int      `json:"tasks_completed"                        example:"30"`
+	TaskCompletedRate         *float64 `json:"tasks_completed_rate"                   example:"30"`
+	TaskAverageCompletionTIme *string  `json:"tasks_average_completed_time"           example:"1m30s"`
 }
 
 func toDTOFromDomain(statistics domain.Statistics) GetStatisticsResponse {

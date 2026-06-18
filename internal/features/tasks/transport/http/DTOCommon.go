@@ -15,7 +15,7 @@ type TaskDTOResponce struct {
 	Completed    bool       `json:"completed"           example:"true"`
 	CreatedAt    time.Time  `json:"createdAt"           example:"10.02.2026"`
 	CompletedAt  *time.Time `json:"completedAt"         example:"11.02.2026"`
-	AuthorUserID uuid.UUID  `json:"authorUserID"        example:"2"`
+	AuthorUserID uuid.UUID  `json:"author_user_id"      example:"2"`
 }
 
 func TaskDTOFromDomain(task domain.Task) TaskDTOResponce {
